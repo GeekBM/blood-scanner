@@ -1,192 +1,83 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width,
-                 initial-scale=1,
-                 maximum-scale=1">
-
-  <title>Сканер компонентів крові</title>
-
-  <script src="https://unpkg.com/html5-qrcode"></script>
-
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
-      margin: 0;
-      padding: 16px;
-      background: #f4f4f4;
-    }
-
-    h2 {
-      margin-top: 5px;
-    }
-
-    .card {
-      background: white;
-      padding: 16px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-    }
-
-    #reader {
-      width: 100%;
-      background: white;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 8px;
-      border: none;
-      border-radius: 10px;
-      font-size: 17px;
-    }
-
-    #startButton {
-      background: #1976d2;
-      color: white;
-    }
-
-    #stopButton {
-      background: #ddd;
-    }
-
-    #result {
-      font-size: 22px;
-      font-weight: 600;
-      word-break: break-all;
-      margin-top: 8px;
-    }
-
-    #format {
-      margin-top: 8px;
-      color: #666;
-    }
-
-    .small {
-      font-size: 13px;
-      color: #777;
-    }
-  </style>
-</head>
-
-<body>
-
-<h2>Сканер компонентів крові</h2>
-
-<div class="card">
-
-  <button id="startButton" onclick="startScanner()">
-    Відкрити камеру
-  </button>
-
-  <button id="stopButton" onclick="stopScanner()">
-    Зупинити камеру
-  </button>
-
-</div>
-
-<div id="reader"></div>
-
-<div class="card">
-
-  <div class="small">
-    Прочитаний код
-  </div>
-
-  <div id="result">
-    —
-  </div>
-
-  <div id="format">
-  </div>
-
-</div>
-
-
 <script>
 
 let scanner = null;
 let running = false;
 let lastCode = "";
 
-
 async function startScanner() {
 
-  if (running) {
-    return;
-  }
+  if (running) return;
 
   scanner = new Html5Qrcode("reader");
 
-  const config = {
+  const formats = [
+    Html5QrcodeSupportedFormats.CODE_128,
+    Html5QrcodeSupportedFormats.CODE_39,
+    Html5QrcodeSupportedFormats.CODE_93,
+    Html5QrcodeSupportedFormats.DATA_MATRIX,
+    Html5QrcodeSupportedFormats.QR_CODE
+  ];
 
-    fps: 12,
+  const config = {
+    fps: 20,
+
+    formatsToSupport: formats,
 
     qrbox: function(width, height) {
-
       return {
-        width: Math.floor(width * 0.9),
-        height: Math.floor(height * 0.35)
+        width: Math.floor(width * 0.95),
+        height: Math.floor(height * 0.55)
       };
+    },
+
+    experimentalFeatures: {
+      useBarCodeDetectorIfSupported: true
     }
-
   };
-
 
   try {
 
+    const cameras = await Html5Qrcode.getCameras();
+
+    if (!cameras || cameras.length === 0) {
+      alert("Камеру не знайдено");
+      return;
+    }
+
+    // Зазвичай остання камера — основна задня
+    const cameraId = cameras[cameras.length - 1].id;
+
     await scanner.start(
-
-      {
-        facingMode: "environment"
-      },
-
+      cameraId,
       config,
 
       function(decodedText, decodedResult) {
 
-        if (decodedText === lastCode) {
-          return;
-        }
+        if (decodedText === lastCode) return;
 
         lastCode = decodedText;
 
-        document
-          .getElementById("result")
-          .textContent = decodedText;
-
+        document.getElementById("result").textContent =
+          decodedText;
 
         let format = "невідомий";
 
         try {
-
           format =
             decodedResult.result.format.formatName;
-
         } catch (e) {}
 
-
-        document
-          .getElementById("format")
-          .textContent =
-            "Формат: " + format;
-
+        document.getElementById("format").textContent =
+          "Формат: " + format;
 
         if (navigator.vibrate) {
           navigator.vibrate(150);
         }
-
       },
 
-      function(error) {
-
-        // Сканер просто продовжує пошук.
+      function(errorMessage) {
+        // Не показуємо помилки кожного невдалого кадру
       }
-
     );
 
     running = true;
@@ -194,32 +85,22 @@ async function startScanner() {
   } catch (e) {
 
     alert(
-      "Не вдалося відкрити камеру:\n\n" +
+      "Помилка камери:\n\n" +
       e
     );
   }
 }
 
-
 async function stopScanner() {
 
-  if (!scanner || !running) {
-    return;
-  }
+  if (!scanner || !running) return;
 
   try {
-
     await scanner.stop();
-
     scanner.clear();
-
   } catch (e) {}
 
   running = false;
-
 }
 
 </script>
-
-</body>
-</html>
