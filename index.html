@@ -6,9 +6,9 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
 
-  <title>Сканер компонентів крові</title>
+  <title>OCR компонентів крові</title>
 
-  <script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
     body {
@@ -19,8 +19,8 @@
     }
 
     .card {
-      max-width: 600px;
-      margin: 0 auto 16px auto;
+      max-width: 650px;
+      margin: 0 auto 16px;
       background: white;
       padding: 16px;
       border-radius: 12px;
@@ -31,33 +31,41 @@
     }
 
     input {
-      font-size: 18px;
       width: 100%;
+      font-size: 17px;
     }
 
     img {
-      display: none;
       width: 100%;
       margin-top: 15px;
       border-radius: 8px;
+      display: none;
     }
 
-    #result {
-      font-size: 22px;
+    .field {
+      margin-top: 12px;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #777;
+    }
+
+    .value {
+      font-size: 18px;
       font-weight: 600;
-      word-break: break-all;
-      margin-top: 10px;
+      word-break: break-word;
     }
 
-    #status {
-      margin-top: 10px;
-      color: #666;
-    }
-
-    .hint {
+    #raw {
+      white-space: pre-wrap;
+      font-family: monospace;
       font-size: 14px;
-      color: #666;
-      line-height: 1.4;
+    }
+
+    #progress {
+      margin-top: 12px;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -65,37 +73,70 @@
 <body>
 
 <div class="card">
+  <h2>OCR етикетки компонента крові</h2>
 
-  <h2>Сканер компонентів крові</h2>
-
-  <p class="hint">
-    Сфотографуй один штрихкод крупним планом.
-    У кадрі бажано залишити тільки сам штрихкод
-    і невеликі поля навколо нього.
+  <p>
+    Сфотографуй етикетку крупним планом,
+    максимально рівно і без відблиску.
   </p>
 
   <input
-    id="photo"
     type="file"
+    id="photo"
     accept="image/*"
-    capture="environment"
-  >
+    capture="environment">
 
   <img id="preview">
+
+  <div id="progress">
+    Очікую фото
+  </div>
+</div>
+
+
+<div class="card">
+
+  <div class="field">
+    <div class="label">Компонент</div>
+    <div class="value" id="component">—</div>
+  </div>
+
+  <div class="field">
+    <div class="label">№ / ID дози</div>
+    <div class="value" id="doseId">—</div>
+  </div>
+
+  <div class="field">
+    <div class="label">ABO</div>
+    <div class="value" id="abo">—</div>
+  </div>
+
+  <div class="field">
+    <div class="label">RhD / фенотип</div>
+    <div class="value" id="rh">—</div>
+  </div>
+
+  <div class="field">
+    <div class="label">Дати, знайдені на етикетці</div>
+    <div class="value" id="dates">—</div>
+  </div>
+
+  <div class="field">
+    <div class="label">Обʼєм</div>
+    <div class="value" id="volume">—</div>
+  </div>
 
 </div>
 
 
 <div class="card">
 
-  <div>Прочитаний код:</div>
-
-  <div id="result">
-    —
+  <div class="label">
+    Весь розпізнаний текст
   </div>
 
-  <div id="status">
-    Очікую фотографію
+  <div id="raw">
+    —
   </div>
 
 </div>
@@ -103,80 +144,220 @@
 
 <script>
 
-const codeReader =
-  new ZXing.BrowserMultiFormatReader();
-
-const input =
+const photo =
   document.getElementById("photo");
 
 const preview =
   document.getElementById("preview");
 
-const resultBox =
-  document.getElementById("result");
 
-const statusBox =
-  document.getElementById("status");
+photo.addEventListener("change", async () => {
 
-
-input.addEventListener("change", async function () {
-
-  if (!input.files || !input.files[0]) {
+  if (!photo.files || !photo.files[0]) {
     return;
   }
 
-  const file = input.files[0];
+  const file = photo.files[0];
 
-  const url =
+  preview.src =
     URL.createObjectURL(file);
 
-  preview.src = url;
-  preview.style.display = "block";
+  preview.style.display =
+    "block";
 
-  resultBox.textContent = "—";
-  statusBox.textContent =
-    "Аналізую штрихкод...";
+  document.getElementById("progress")
+    .textContent =
+    "Розпізнаю текст...";
 
+  try {
 
-  preview.onload = async function () {
+    const result =
+      await Tesseract.recognize(
+        file,
+        "ukr+eng",
+        {
+          logger: m => {
 
-    try {
+            if (
+              m.status ===
+              "recognizing text"
+            ) {
 
-      const result =
-        await codeReader.decodeFromImageElement(
-          preview
-        );
+              const percent =
+                Math.round(
+                  (m.progress || 0) * 100
+                );
 
-      resultBox.textContent =
-        result.getText();
+              document
+                .getElementById("progress")
+                .textContent =
+                "Розпізнавання: " +
+                percent +
+                "%";
+            }
 
-      let format = "";
+          }
+        }
+      );
 
-      try {
-        format =
-          result.getBarcodeFormat().toString();
-      } catch (e) {}
+    const text =
+      result.data.text || "";
 
-      statusBox.textContent =
-        "Успішно. Формат: " + format;
+    document
+      .getElementById("raw")
+      .textContent =
+      text;
 
-      if (navigator.vibrate) {
-        navigator.vibrate(150);
-      }
+    parseLabel(text);
 
-    } catch (err) {
+    document
+      .getElementById("progress")
+      .textContent =
+      "Готово";
 
-      console.log(err);
+  } catch (e) {
 
-      statusBox.textContent =
-        "Штрихкод не розпізнано. " +
-        "Спробуй сфотографувати ближче, " +
-        "рівніше та без відблиску.";
-    }
+    console.error(e);
 
-  };
+    document
+      .getElementById("progress")
+      .textContent =
+      "Помилка OCR: " + e;
+  }
 
 });
+
+
+function parseLabel(text) {
+
+  let clean =
+    text
+      .replace(/\n+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+
+  // -----------------------
+  // ID дози
+  // приклад: 26.01.0199828
+  // -----------------------
+
+  let dose =
+    clean.match(
+      /\b\d{2}\.\d{2}\.\d{6,8}\b/
+    );
+
+  document
+    .getElementById("doseId")
+    .textContent =
+    dose ? dose[0] : "—";
+
+
+  // -----------------------
+  // ABO
+  // -----------------------
+
+  let abo =
+    clean.match(
+      /\b(?:AB|A|B|O)\s*\(\s*(?:I|II|III|IV)\s*\)/i
+    );
+
+  document
+    .getElementById("abo")
+    .textContent =
+    abo ? abo[0] : "—";
+
+
+  // -----------------------
+  // Дати
+  // -----------------------
+
+  let dates =
+    clean.match(
+      /\b\d{2}\.\d{2}\.\d{4}\b/g
+    );
+
+  document
+    .getElementById("dates")
+    .textContent =
+    dates
+      ? [...new Set(dates)].join(" ; ")
+      : "—";
+
+
+  // -----------------------
+  // Обʼєм
+  // -----------------------
+
+  let volume =
+    clean.match(
+      /\b\d{2,4}\s*(?:ml|мл)\b/i
+    );
+
+  document
+    .getElementById("volume")
+    .textContent =
+    volume ? volume[0] : "—";
+
+
+  // -----------------------
+  // Компонент
+  // -----------------------
+
+  let component = "—";
+
+  if (/тромбоцит/i.test(clean)) {
+    component = "Тромбоцити";
+  }
+
+  else if (
+    /еритроцит/i.test(clean)
+  ) {
+    component =
+      "Еритроцитарний компонент";
+  }
+
+  else if (
+    /плазм/i.test(clean)
+  ) {
+    component = "Плазма";
+  }
+
+  else if (
+    /кріопрецип/i.test(clean)
+  ) {
+    component =
+      "Кріопреципітат";
+  }
+
+  document
+    .getElementById("component")
+    .textContent =
+    component;
+
+
+  // -----------------------
+  // Rh / фенотип
+  // -----------------------
+
+  let rh =
+    clean.match(
+      /\b[CcEeDd]{3,8}\b/
+    );
+
+  if (!rh) {
+
+    rh =
+      clean.match(
+        /Rh[Dd]?\s*[+-]/i
+      );
+  }
+
+  document
+    .getElementById("rh")
+    .textContent =
+    rh ? rh[0] : "—";
+}
 
 </script>
 
