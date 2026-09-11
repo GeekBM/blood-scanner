@@ -1,106 +1,184 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>Сканер компонентів крові</title>
+
+  <script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 16px;
+    }
+
+    .card {
+      max-width: 600px;
+      margin: 0 auto 16px auto;
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input {
+      font-size: 18px;
+      width: 100%;
+    }
+
+    img {
+      display: none;
+      width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+
+    #result {
+      font-size: 22px;
+      font-weight: 600;
+      word-break: break-all;
+      margin-top: 10px;
+    }
+
+    #status {
+      margin-top: 10px;
+      color: #666;
+    }
+
+    .hint {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h2>Сканер компонентів крові</h2>
+
+  <p class="hint">
+    Сфотографуй один штрихкод крупним планом.
+    У кадрі бажано залишити тільки сам штрихкод
+    і невеликі поля навколо нього.
+  </p>
+
+  <input
+    id="photo"
+    type="file"
+    accept="image/*"
+    capture="environment"
+  >
+
+  <img id="preview">
+
+</div>
+
+
+<div class="card">
+
+  <div>Прочитаний код:</div>
+
+  <div id="result">
+    —
+  </div>
+
+  <div id="status">
+    Очікую фотографію
+  </div>
+
+</div>
+
+
 <script>
 
-let scanner = null;
-let running = false;
-let lastCode = "";
+const codeReader =
+  new ZXing.BrowserMultiFormatReader();
 
-async function startScanner() {
+const input =
+  document.getElementById("photo");
 
-  if (running) return;
+const preview =
+  document.getElementById("preview");
 
-  scanner = new Html5Qrcode("reader");
+const resultBox =
+  document.getElementById("result");
 
-  const formats = [
-    Html5QrcodeSupportedFormats.CODE_128,
-    Html5QrcodeSupportedFormats.CODE_39,
-    Html5QrcodeSupportedFormats.CODE_93,
-    Html5QrcodeSupportedFormats.DATA_MATRIX,
-    Html5QrcodeSupportedFormats.QR_CODE
-  ];
+const statusBox =
+  document.getElementById("status");
 
-  const config = {
-    fps: 20,
 
-    formatsToSupport: formats,
+input.addEventListener("change", async function () {
 
-    qrbox: function(width, height) {
-      return {
-        width: Math.floor(width * 0.95),
-        height: Math.floor(height * 0.55)
-      };
-    },
+  if (!input.files || !input.files[0]) {
+    return;
+  }
 
-    experimentalFeatures: {
-      useBarCodeDetectorIfSupported: true
+  const file = input.files[0];
+
+  const url =
+    URL.createObjectURL(file);
+
+  preview.src = url;
+  preview.style.display = "block";
+
+  resultBox.textContent = "—";
+  statusBox.textContent =
+    "Аналізую штрихкод...";
+
+
+  preview.onload = async function () {
+
+    try {
+
+      const result =
+        await codeReader.decodeFromImageElement(
+          preview
+        );
+
+      resultBox.textContent =
+        result.getText();
+
+      let format = "";
+
+      try {
+        format =
+          result.getBarcodeFormat().toString();
+      } catch (e) {}
+
+      statusBox.textContent =
+        "Успішно. Формат: " + format;
+
+      if (navigator.vibrate) {
+        navigator.vibrate(150);
+      }
+
+    } catch (err) {
+
+      console.log(err);
+
+      statusBox.textContent =
+        "Штрихкод не розпізнано. " +
+        "Спробуй сфотографувати ближче, " +
+        "рівніше та без відблиску.";
     }
+
   };
 
-  try {
-
-    const cameras = await Html5Qrcode.getCameras();
-
-    if (!cameras || cameras.length === 0) {
-      alert("Камеру не знайдено");
-      return;
-    }
-
-    // Зазвичай остання камера — основна задня
-    const cameraId = cameras[cameras.length - 1].id;
-
-    await scanner.start(
-      cameraId,
-      config,
-
-      function(decodedText, decodedResult) {
-
-        if (decodedText === lastCode) return;
-
-        lastCode = decodedText;
-
-        document.getElementById("result").textContent =
-          decodedText;
-
-        let format = "невідомий";
-
-        try {
-          format =
-            decodedResult.result.format.formatName;
-        } catch (e) {}
-
-        document.getElementById("format").textContent =
-          "Формат: " + format;
-
-        if (navigator.vibrate) {
-          navigator.vibrate(150);
-        }
-      },
-
-      function(errorMessage) {
-        // Не показуємо помилки кожного невдалого кадру
-      }
-    );
-
-    running = true;
-
-  } catch (e) {
-
-    alert(
-      "Помилка камери:\n\n" +
-      e
-    );
-  }
-}
-
-async function stopScanner() {
-
-  if (!scanner || !running) return;
-
-  try {
-    await scanner.stop();
-    scanner.clear();
-  } catch (e) {}
-
-  running = false;
-}
+});
 
 </script>
+
+</body>
+</html>
