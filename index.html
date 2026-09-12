@@ -148,10 +148,11 @@ button {
 </p>
 
 <input
-id="photo"
-type="file"
-accept="image/*"
-capture="environment">
+  id="photo"
+  type="file"
+  accept="image/*"
+  capture="environment"
+  onchange="handlePhoto(event)">
 
 <img id="preview">
 
@@ -336,12 +337,6 @@ let rawOCR = '';
 // PHOTO
 // ========================================
 
-document
-.getElementById('photo')
-.addEventListener(
-  'change',
-  handlePhoto
-);
 
 
 async function handlePhoto(e) {
