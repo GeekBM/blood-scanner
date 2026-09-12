@@ -582,66 +582,6 @@ function sendToBackend(values) {
 
 
 
-// ========================================
-// RESPONSE FROM APPS SCRIPT
-// ========================================
-
-
-
-
-    if (
-      msg.type ===
-      'ocrResult'
-    ) {
-
-      rawOCR =
-        msg.rawText || '';
-
-
-      fillFields(
-        msg.data || {}
-      );
-
-
-      document
-        .getElementById(
-          'fieldsCard'
-        )
-        .style.display =
-        'block';
-
-
-      setStatus(
-        '✅ Розпізнано. Перевір усі поля.',
-        'ok'
-      );
-
-    }
-
-
-    if (
-      msg.type ===
-      'saveResult'
-    ) {
-
-      setStatus(
-        '✅ Дозу ' +
-        msg.doseId +
-        ' записано.',
-        'ok'
-      );
-
-
-      alert(
-        'Дозу успішно прийнято'
-      );
-
-    }
-
-  }
-);
-
-
 
 // ========================================
 // FILL FIELDS
