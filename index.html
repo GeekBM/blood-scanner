@@ -386,15 +386,29 @@ async function handlePhoto(e) {
   );
 
 
-  sendToBackend({
+  const requestId =
+  Date.now().toString() +
+  '_' +
+  Math.random()
+    .toString(36)
+    .slice(2);
 
-    action:
-      'ocr',
+sendToBackend({
 
-    imageBase64:
-      base64
+  action:
+    'ocr',
 
-  });
+  requestId:
+    requestId,
+
+  imageBase64:
+    base64
+
+});
+
+pollOcrResult(
+  requestId
+);
 
 }
 
@@ -577,41 +591,7 @@ function sendToBackend(values) {
 // RESPONSE FROM APPS SCRIPT
 // ========================================
 
-window.addEventListener(
-  'message',
-  function(event) {
 
-    console.log(
-      'MESSAGE FROM:',
-      event.origin,
-      event.data
-    );
-
-    const msg =
-      event.data;
-
-    if (
-      !msg ||
-      typeof msg !== 'object'
-    ) {
-      return;
-    }
-
-    if (!msg.ok) {
-
-      setStatus(
-        '❌ ' +
-        (
-          msg.error ||
-          'Помилка'
-        ),
-        'warning'
-      );
-
-      return;
-    }
-
-   
 
 
     if (
@@ -703,6 +683,122 @@ function fillFields(d) {
 }
 
 
+let pollTimer = null;
+
+
+function pollOcrResult(requestId) {
+
+  let attempts = 0;
+
+  if (pollTimer) {
+    clearInterval(pollTimer);
+  }
+
+  pollTimer =
+    setInterval(() => {
+
+      attempts++;
+
+      if (attempts > 60) {
+
+        clearInterval(
+          pollTimer
+        );
+
+        setStatus(
+          '❌ Не отримано відповідь від OCR.',
+          'warning'
+        );
+
+        return;
+      }
+
+      const old =
+        document.getElementById(
+          'jsonpRequest'
+        );
+
+      if (old) {
+        old.remove();
+      }
+
+      const script =
+        document.createElement(
+          'script'
+        );
+
+      script.id =
+        'jsonpRequest';
+
+      script.src =
+        APPS_SCRIPT_URL +
+        '?action=status' +
+        '&requestId=' +
+        encodeURIComponent(requestId) +
+        '&callback=handleOcrStatus' +
+        '&t=' +
+        Date.now();
+
+      document.body
+        .appendChild(script);
+
+    }, 1000);
+}
+
+
+function handleOcrStatus(msg) {
+
+  if (!msg) {
+    return;
+  }
+
+  if (msg.pending) {
+    return;
+  }
+
+  if (pollTimer) {
+
+    clearInterval(
+      pollTimer
+    );
+
+    pollTimer = null;
+  }
+
+  if (!msg.ok) {
+
+    setStatus(
+      '❌ ' +
+      (
+        msg.error ||
+        'Помилка OCR'
+      ),
+      'warning'
+    );
+
+    return;
+  }
+
+  rawOCR =
+    msg.rawText || '';
+
+  fillFields(
+    msg.data || {}
+  );
+
+  document
+    .getElementById(
+      'fieldsCard'
+    )
+    .style.display =
+      'block';
+
+  setStatus(
+    '✅ Розпізнано. Перевір усі поля.',
+    'ok'
+  );
+}
+  
 
 // ========================================
 // SAVE
