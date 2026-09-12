@@ -733,7 +733,115 @@ function handleOcrStatus(msg) {
     'ok'
   );
 }
+
   
+let savePollTimer = null;
+
+
+function pollSaveResult(requestId) {
+
+  let attempts = 0;
+
+  if (savePollTimer) {
+    clearInterval(savePollTimer);
+  }
+
+  savePollTimer =
+    setInterval(() => {
+
+      attempts++;
+
+      if (attempts > 30) {
+
+        clearInterval(
+          savePollTimer
+        );
+
+        setStatus(
+          '❌ Не отримано підтвердження збереження.',
+          'warning'
+        );
+
+        return;
+      }
+
+      const old =
+        document.getElementById(
+          'jsonpSaveRequest'
+        );
+
+      if (old) {
+        old.remove();
+      }
+
+      const script =
+        document.createElement(
+          'script'
+        );
+
+      script.id =
+        'jsonpSaveRequest';
+
+      script.src =
+        APPS_SCRIPT_URL +
+        '?action=saveStatus' +
+        '&requestId=' +
+        encodeURIComponent(requestId) +
+        '&callback=handleSaveStatus' +
+        '&t=' +
+        Date.now();
+
+      document.body
+        .appendChild(script);
+
+    }, 1000);
+}
+
+
+function handleSaveStatus(msg) {
+
+  if (!msg) {
+    return;
+  }
+
+  if (msg.pending) {
+    return;
+  }
+
+  if (savePollTimer) {
+
+    clearInterval(
+      savePollTimer
+    );
+
+    savePollTimer = null;
+  }
+
+  if (!msg.ok) {
+
+    setStatus(
+      '❌ ' +
+      (
+        msg.error ||
+        'Помилка збереження'
+      ),
+      'warning'
+    );
+
+    return;
+  }
+
+  setStatus(
+    '✅ Дозу ' +
+    msg.doseId +
+    ' прийнято та записано.',
+    'ok'
+  );
+
+  alert(
+    'Дозу успішно прийнято'
+  );
+}  
 
 // ========================================
 // SAVE
@@ -742,34 +850,32 @@ function handleOcrStatus(msg) {
 function submitDose() {
 
   const doseId =
-    valueOf(
-      'doseId'
-    );
-
+    valueOf('doseId');
 
   if (!doseId) {
-
-    alert(
-      'Перевір ID дози.'
-    );
-
+    alert('Перевір ID дози.');
     return;
   }
 
+  const requestId =
+    Date.now().toString() +
+    '_' +
+    Math.random()
+      .toString(36)
+      .slice(2);
 
   setStatus(
     'Зберігаю дозу...',
     ''
   );
 
-
   sendToBackend({
 
-    action:
-      'save',
+    action: 'save',
 
-    doseId:
-      doseId,
+    requestId: requestId,
+
+    doseId: doseId,
 
     component:
       valueOf('component'),
@@ -803,11 +909,12 @@ function submitDose() {
 
     rawText:
       rawOCR
-
   });
 
+  pollSaveResult(
+    requestId
+  );
 }
-
 
 
 // ========================================
