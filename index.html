@@ -176,6 +176,20 @@ style="display:none">
 
 
 <label>
+Код компонента
+</label>
+
+<input id="componentCode">
+
+  
+<label>
+Ціна, грн
+</label>
+
+<input id="price">
+
+  
+<label>
 ID дози
 </label>
 
@@ -593,6 +607,8 @@ function fillFields(d) {
 
     'component',
     'doseId',
+    'componentCode'
+    'price'
     'abo',
     'rh',
     'phenotype',
@@ -879,7 +895,13 @@ function submitDose() {
 
     component:
       valueOf('component'),
+    
+    componentCode:
+      valueOf('componentCode'),
 
+    price:
+      valueOf('price'),
+    
     abo:
       valueOf('abo'),
 
