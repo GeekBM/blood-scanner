@@ -581,31 +581,21 @@ window.addEventListener(
   'message',
   function(event) {
 
-    if (
-      event.origin !==
-      'https://script.google.com'
-      &&
-      !event.origin.endsWith(
-        '.googleusercontent.com'
-      )
-    ) {
-
-      return;
-    }
-
+    console.log(
+      'MESSAGE FROM:',
+      event.origin,
+      event.data
+    );
 
     const msg =
       event.data;
-
 
     if (
       !msg ||
       typeof msg !== 'object'
     ) {
-
       return;
     }
-
 
     if (!msg.ok) {
 
@@ -620,6 +610,8 @@ window.addEventListener(
 
       return;
     }
+
+   
 
 
     if (
