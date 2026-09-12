@@ -1,6 +1,7 @@
 const VISION_API_KEY = '';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyBrLB_cT7qJsSQK-3LYwZYTO5jvxhgmiN30ddWzhxfvq4mE2ka5uuaEtwq97cIHzm/exec';
 <!DOCTYPE html>
+
 <html lang="uk">
 
 <head>
@@ -8,19 +9,20 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyBrLB_cT7qJsS
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1,
-               maximum-scale=1">
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1">
 
 <title>Приймання компонентів крові</title>
 
 <style>
 
 body {
-  font-family: -apple-system,
-               BlinkMacSystemFont,
-               Arial,
-               sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
 
   background: #f2f2f7;
   margin: 0;
@@ -55,12 +57,13 @@ input,
 select {
   width: 100%;
   box-sizing: border-box;
-
   padding: 12px;
 
   font-size: 17px;
 
-  border: 1px solid #ccc;
+  border:
+    1px solid #ccc;
+
   border-radius: 9px;
 
   background: white;
@@ -68,7 +71,6 @@ select {
 
 button {
   width: 100%;
-
   padding: 15px;
 
   border: none;
@@ -76,12 +78,7 @@ button {
 
   font-size: 18px;
 
-  margin-top: 10px;
-}
-
-.primary {
-  background: #1976d2;
-  color: white;
+  margin-top: 12px;
 }
 
 .success {
@@ -92,7 +89,7 @@ button {
 #preview {
   display: none;
 
-  max-width: 100%;
+  width: 100%;
   margin-top: 12px;
 
   border-radius: 10px;
@@ -103,12 +100,12 @@ button {
   font-weight: 600;
 }
 
-.warning {
-  color: #b06000;
-}
-
 .ok {
   color: #188038;
+}
+
+.warning {
+  color: #b3261e;
 }
 
 .small {
@@ -125,255 +122,273 @@ button {
 
 <div class="container">
 
+
 <div class="card">
 
-<h2>Приймання компонента крові</h2>
+<h2>
+Приймання компонента крові
+</h2>
 
 <p class="small">
-Сфотографуй всю основну етикетку максимально рівно.
+Сфотографуй основну етикетку максимально рівно.
 </p>
 
 <input
-  id="photo"
-  type="file"
-  accept="image/*"
-  capture="environment">
+id="photo"
+type="file"
+accept="image/*"
+capture="environment">
 
 <img id="preview">
 
 <div id="status">
-  Очікую фотографію
+Очікую фотографію
 </div>
 
 </div>
 
 
-<div class="card" id="fieldsCard" style="display:none">
+<div
+class="card"
+id="fieldsCard"
+style="display:none">
 
-<label>Компонент</label>
+<label>
+Компонент
+</label>
+
 <input id="component">
 
-<label>ID дози</label>
+
+<label>
+ID дози
+</label>
+
 <input id="doseId">
 
-<label>ABO</label>
+
+<label>
+ABO
+</label>
+
 <select id="abo">
-  <option value="">—</option>
-  <option>O(I)</option>
-  <option>A(II)</option>
-  <option>B(III)</option>
-  <option>AB(IV)</option>
+
+<option value="">
+—
+</option>
+
+<option>
+O(I)
+</option>
+
+<option>
+A(II)
+</option>
+
+<option>
+B(III)
+</option>
+
+<option>
+AB(IV)
+</option>
+
 </select>
 
-<label>RhD</label>
+
+<label>
+RhD
+</label>
+
 <select id="rh">
-  <option value="">—</option>
-  <option>RhD+</option>
-  <option>RhD-</option>
+
+<option value="">
+—
+</option>
+
+<option>
+RhD+
+</option>
+
+<option>
+RhD-
+</option>
+
 </select>
 
-<label>Kell</label>
+
+<label>
+Kell
+</label>
+
 <select id="kell">
-  <option value="">—</option>
-  <option>Kell+</option>
-  <option>Kell-</option>
+
+<option value="">
+—
+</option>
+
+<option>
+Kell+
+</option>
+
+<option>
+Kell-
+</option>
+
 </select>
 
-<label>Фенотип</label>
+
+<label>
+Фенотип
+</label>
+
 <input id="phenotype">
 
-<label>Обʼєм</label>
+
+<label>
+Обʼєм
+</label>
+
 <input id="volume">
 
-<label>Дата заготівлі</label>
+
+<label>
+Дата заготівлі
+</label>
+
 <input id="collectionDate">
 
-<label>Термін придатності</label>
+
+<label>
+Термін придатності
+</label>
+
 <input id="expiryDate">
 
-<label>Антикоагулянт</label>
+
+<label>
+Антикоагулянт
+</label>
+
 <input id="anticoagulant">
 
-<label>Додатковий розчин</label>
+
+<label>
+Додатковий розчин
+</label>
+
 <input id="additiveSolution">
 
+
 <button
-  class="success"
-  onclick="submitDose()">
-  Підтвердити приймання
+class="success"
+onclick="submitDose()">
+
+Підтвердити приймання
+
 </button>
 
 </div>
+
+
+<iframe
+name="backendFrame"
+id="backendFrame"
+style="display:none">
+</iframe>
+
+
+<form
+id="backendForm"
+method="POST"
+target="backendFrame"
+style="display:none">
+</form>
+
 
 </div>
 
 
 <script>
 
-// =====================================================
-// НАЛАШТУВАННЯ
-// =====================================================
-
-const VISION_API_KEY =
-  'ВСТАВ_BROWSER_API_KEY';
-
 const APPS_SCRIPT_URL =
-  'ВСТАВ_URL_APPS_SCRIPT';
+  'ВСТАВ_СЮДИ_URL_APPS_SCRIPT_EXEC';
 
 
 let rawOCR = '';
 
 
-// =====================================================
-// ФОТО
-// =====================================================
+// ========================================
+// PHOTO
+// ========================================
 
 document
-  .getElementById('photo')
-  .addEventListener(
-    'change',
-    handlePhoto
+.getElementById('photo')
+.addEventListener(
+  'change',
+  handlePhoto
+);
+
+
+async function handlePhoto(e) {
+
+  const file =
+    e.target.files[0];
+
+  if (!file) {
+    return;
+  }
+
+
+  setStatus(
+    'Готую фотографію...',
+    ''
   );
 
 
-async function handlePhoto(event) {
-
-  const file =
-    event.target.files[0];
-
-  if (!file) return;
-
-  const status =
-    document.getElementById('status');
-
-  status.textContent =
-    'Готую фотографію...';
-
-  const imageData =
+  const dataUrl =
     await resizeImage(file);
 
-  document.getElementById('preview').src =
-    imageData;
 
-  document.getElementById('preview').style.display =
+  const preview =
+    document.getElementById(
+      'preview'
+    );
+
+  preview.src =
+    dataUrl;
+
+  preview.style.display =
     'block';
 
-  status.textContent =
-    'Cloud Vision розпізнає етикетку...';
 
-  try {
-
-    const base64 =
-      imageData.split(',')[1];
-
-    const response =
-      await fetch(
-        'https://vision.googleapis.com/v1/images:annotate?key='
-        + encodeURIComponent(VISION_API_KEY),
-
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type':
-              'application/json'
-          },
-
-          body: JSON.stringify({
-
-            requests: [
-
-              {
-                image: {
-                  content: base64
-                },
-
-                features: [
-                  {
-                    type:
-                      'TEXT_DETECTION'
-                  }
-                ],
-
-                imageContext: {
-                  languageHints: [
-                    'uk',
-                    'en'
-                  ]
-                }
-              }
-
-            ]
-
-          })
-        }
-      );
+  const base64 =
+    dataUrl.split(',')[1];
 
 
-    const json =
-      await response.json();
+  setStatus(
+    'Розпізнаю етикетку...',
+    ''
+  );
 
 
-    if (!response.ok) {
+  sendToBackend({
 
-      throw new Error(
-        json.error?.message ||
-        'Cloud Vision error'
-      );
-    }
+    action:
+      'ocr',
 
+    imageBase64:
+      base64
 
-    rawOCR =
-      json.responses?.[0]
-          ?.textAnnotations?.[0]
-          ?.description || '';
+  });
 
-
-    if (!rawOCR) {
-
-      throw new Error(
-        'Текст на етикетці не знайдений'
-      );
-    }
-
-
-    const data =
-      parseBloodLabel(rawOCR);
-
-
-    fillFields(data);
-
-
-    document
-      .getElementById('fieldsCard')
-      .style.display =
-      'block';
-
-
-    status.textContent =
-      '✅ Етикетку розпізнано. Перевір дані перед прийманням.';
-
-    status.className =
-      'ok';
-
-
-  } catch (err) {
-
-    console.error(err);
-
-    status.textContent =
-      '❌ ' + err.message;
-
-    status.className =
-      'warning';
-  }
 }
 
 
 
-// =====================================================
-// ЗМЕНШУЄМО ФОТО
-// =====================================================
+// ========================================
+// IMAGE RESIZE
+// ========================================
 
 function resizeImage(file) {
 
@@ -383,86 +398,100 @@ function resizeImage(file) {
       const reader =
         new FileReader();
 
-      reader.onload = function(e) {
 
-        const img =
-          new Image();
+      reader.onload =
+        function(e) {
 
-        img.onload = function() {
-
-          const maxSide = 1800;
-
-          let width =
-            img.width;
-
-          let height =
-            img.height;
+          const img =
+            new Image();
 
 
-          if (
-            width > maxSide ||
-            height > maxSide
-          ) {
+          img.onload =
+            function() {
 
-            const scale =
-              Math.min(
-                maxSide / width,
-                maxSide / height
+              const maxSide =
+                1600;
+
+
+              let width =
+                img.width;
+
+              let height =
+                img.height;
+
+
+              if (
+                width > maxSide ||
+                height > maxSide
+              ) {
+
+                const scale =
+                  Math.min(
+                    maxSide / width,
+                    maxSide / height
+                  );
+
+
+                width =
+                  Math.round(
+                    width * scale
+                  );
+
+
+                height =
+                  Math.round(
+                    height * scale
+                  );
+
+              }
+
+
+              const canvas =
+                document.createElement(
+                  'canvas'
+                );
+
+
+              canvas.width =
+                width;
+
+              canvas.height =
+                height;
+
+
+              const ctx =
+                canvas.getContext(
+                  '2d'
+                );
+
+
+              ctx.drawImage(
+                img,
+                0,
+                0,
+                width,
+                height
               );
 
-            width =
-              Math.round(
-                width * scale
+
+              resolve(
+                canvas.toDataURL(
+                  'image/jpeg',
+                  0.85
+                )
               );
 
-            height =
-              Math.round(
-                height * scale
-              );
-          }
+            };
 
 
-          const canvas =
-            document.createElement(
-              'canvas'
-            );
-
-          canvas.width =
-            width;
-
-          canvas.height =
-            height;
+          img.onerror =
+            reject;
 
 
-          const ctx =
-            canvas.getContext('2d');
+          img.src =
+            e.target.result;
 
-
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            width,
-            height
-          );
-
-
-          resolve(
-            canvas.toDataURL(
-              'image/jpeg',
-              0.88
-            )
-          );
         };
-
-
-        img.onerror =
-          reject;
-
-
-        img.src =
-          e.target.result;
-      };
 
 
       reader.onerror =
@@ -479,393 +508,168 @@ function resizeImage(file) {
 
 
 
-// =====================================================
-// ПАРСЕР
-// =====================================================
+// ========================================
+// BACKEND FORM
+// ========================================
 
-function parseBloodLabel(text) {
+function sendToBackend(values) {
 
-  const r = {
-
-    component: '',
-    doseId: '',
-    abo: '',
-    rh: '',
-    phenotype: '',
-    kell: '',
-    volume: '',
-    collectionDate: '',
-    expiryDate: '',
-    anticoagulant: '',
-    additiveSolution: ''
-
-  };
-
-
-  const flat =
-    String(text || '')
-
-      .replace(/\n/g, ' ')
-
-      .replace(/\s+/g, ' ')
-
-      .trim();
-
-
-  // COMPONENT
-
-  if (
-    /еритроцит.*збіднен.*лейкоцит/i.test(flat)
-  ) {
-
-    r.component =
-      'Еритроцити, збіднені на лейкоцити';
-
-  }
-
-  else if (
-    /еритроцит/i.test(flat)
-  ) {
-
-    r.component =
-      'Еритроцитарний компонент';
-
-  }
-
-  else if (
-    /тромбоцит.*аферез/i.test(flat)
-  ) {
-
-    r.component =
-      'Тромбоцити, аферез';
-
-  }
-
-  else if (
-    /тромбоцит/i.test(flat)
-  ) {
-
-    r.component =
-      'Тромбоцити';
-
-  }
-
-  else if (
-    /плазм/i.test(flat)
-  ) {
-
-    r.component =
-      'СЗП';
-
-  }
-
-  else if (
-    /кріопрецип/i.test(flat)
-  ) {
-
-    r.component =
-      'Кріопреципітат';
-
-  }
-
-
-  // ID
-
-  const ids =
-    flat.match(
-      /\b\d{2}[.,]\d{2}[.,]\d{6,8}\b/g
+  const form =
+    document.getElementById(
+      'backendForm'
     );
 
-  if (ids?.length) {
 
-    r.doseId =
-      ids[ids.length - 1]
-        .replace(/,/g, '.');
-  }
+  form.innerHTML =
+    '';
 
 
-  // ABO
-
-  if (
-    /\b(?:O|0)\s*\(\s*(?:I|1)\s*\)/i
-      .test(flat)
-  ) {
-
-    r.abo = 'O(I)';
-
-  }
-
-  else if (
-    /\bA\s*\(\s*(?:II|11)\s*\)/i
-      .test(flat)
-  ) {
-
-    r.abo = 'A(II)';
-
-  }
-
-  else if (
-    /\bB\s*\(\s*(?:III|111)\s*\)/i
-      .test(flat)
-  ) {
-
-    r.abo = 'B(III)';
-
-  }
-
-  else if (
-    /\bAB\s*\(\s*(?:IV|1V)\s*\)/i
-      .test(flat)
-  ) {
-
-    r.abo = 'AB(IV)';
-
-  }
+  form.action =
+    APPS_SCRIPT_URL;
 
 
-  // RhD
+  Object.keys(values)
+    .forEach(key => {
 
-  if (
-    /rh\.?\s*(?:позит|positive|\+)/i
-      .test(flat)
-  ) {
-
-    r.rh = 'RhD+';
-
-  }
-
-  else if (
-    /rh\.?\s*(?:негат|negative|-)/i
-      .test(flat)
-  ) {
-
-    r.rh = 'RhD-';
-
-  }
+      const input =
+        document.createElement(
+          'input'
+        );
 
 
-  // Kell
+      input.type =
+        'hidden';
 
-  if (
-    /kell[\s\-]*нег/i
-      .test(flat)
-  ) {
+      input.name =
+        key;
 
-    r.kell =
-      'Kell-';
-
-  }
-
-  else if (
-    /kell[\s\-]*позит/i
-      .test(flat)
-  ) {
-
-    r.kell =
-      'Kell+';
-
-  }
+      input.value =
+        values[key];
 
 
-  // Phenotype
-
-  const phenotype =
-    flat.match(
-      /\b[Cc]{1,2}[Dd]{1,2}[Ee]{1,2}\b/
-    );
-
-  if (phenotype) {
-
-    r.phenotype =
-      phenotype[0];
-
-  }
-
-
-  // Volume
-
-  let volume =
-    flat.match(
-      /об['’ʼ]?\s*єм\s*[:\-]?\s*(\d{2,4})\s*мл/i
-    );
-
-  if (!volume) {
-
-    volume =
-      flat.match(
-        /\b(\d{2,4})\s*мл\b/i
-      );
-  }
-
-  if (volume) {
-
-    r.volume =
-      volume[1] +
-      ' мл';
-
-  }
-
-
-  // Dates:
-  // беремо дати після напису "Дата заготівлі"
-
-  let dateSection =
-    flat;
-
-  const dateIndex =
-    flat
-      .toLowerCase()
-      .indexOf(
-        'дата заготівлі'
+      form.appendChild(
+        input
       );
 
-
-  if (dateIndex >= 0) {
-
-    dateSection =
-      flat.substring(
-        dateIndex
-      );
-
-  }
+    });
 
 
-  const dates =
-    extractDates(
-      dateSection
-    );
-
-
-  if (dates.length > 0) {
-
-    r.collectionDate =
-      dates[0];
-
-  }
-
-
-  if (dates.length > 1) {
-
-    r.expiryDate =
-      dates[1];
-
-  }
-
-
-  // Anticoagulant
-
-  const anti =
-    flat.match(
-      /антикоагулянт\s*[:\-]?\s*([A-ZА-ЯІЇЄҐ\-]{2,15})/i
-    );
-
-  if (anti) {
-
-    r.anticoagulant =
-      anti[1];
-
-  }
-
-
-  // Additive solution
-
-  const additive =
-    flat.match(
-      /додатков(?:ий|ого)\s+розчин\s*[:\-]?\s*([A-ZА-ЯІЇЄҐ\-]{2,15})(?:\s+(\d{1,4})\s*мл)?/i
-    );
-
-
-  if (additive) {
-
-    r.additiveSolution =
-      additive[1];
-
-    if (additive[2]) {
-
-      r.additiveSolution +=
-        ' ' +
-        additive[2] +
-        ' мл';
-
-    }
-
-  }
-
-
-  return r;
+  form.submit();
 }
 
 
 
-function extractDates(text) {
+// ========================================
+// RESPONSE FROM APPS SCRIPT
+// ========================================
 
-  const found =
-    String(text || '')
-      .match(
-        /\b\d{2}[.,]\d{2}[.,]\d{4}\b/g
-      ) || [];
+window.addEventListener(
+  'message',
+  function(event) {
+
+    if (
+      event.origin !==
+      'https://script.google.com'
+      &&
+      !event.origin.endsWith(
+        '.googleusercontent.com'
+      )
+    ) {
+
+      return;
+    }
 
 
-  const result = [];
-
-
-  found.forEach(value => {
-
-    const normalized =
-      value.replace(/,/g, '.');
-
-
-    const p =
-      normalized.split('.');
-
-
-    const day =
-      Number(p[0]);
-
-    const month =
-      Number(p[1]);
-
-    const year =
-      Number(p[2]);
+    const msg =
+      event.data;
 
 
     if (
-      day >= 1 &&
-      day <= 31 &&
-      month >= 1 &&
-      month <= 12 &&
-      year >= 2020 &&
-      year <= 2100
+      !msg ||
+      typeof msg !== 'object'
     ) {
 
-      if (
-        !result.includes(
-          normalized
-        )
-      ) {
-
-        result.push(
-          normalized
-        );
-
-      }
+      return;
     }
 
-  });
+
+    if (!msg.ok) {
+
+      setStatus(
+        '❌ ' +
+        (
+          msg.error ||
+          'Помилка'
+        ),
+        'warning'
+      );
+
+      return;
+    }
 
 
-  return result;
-}
+    if (
+      msg.type ===
+      'ocrResult'
+    ) {
+
+      rawOCR =
+        msg.rawText || '';
+
+
+      fillFields(
+        msg.data || {}
+      );
+
+
+      document
+        .getElementById(
+          'fieldsCard'
+        )
+        .style.display =
+        'block';
+
+
+      setStatus(
+        '✅ Розпізнано. Перевір усі поля.',
+        'ok'
+      );
+
+    }
+
+
+    if (
+      msg.type ===
+      'saveResult'
+    ) {
+
+      setStatus(
+        '✅ Дозу ' +
+        msg.doseId +
+        ' записано.',
+        'ok'
+      );
+
+
+      alert(
+        'Дозу успішно прийнято'
+      );
+
+    }
+
+  }
+);
 
 
 
-// =====================================================
-// ЗАПОВНЕННЯ ФОРМИ
-// =====================================================
+// ========================================
+// FILL FIELDS
+// ========================================
 
 function fillFields(d) {
 
   const ids = [
+
     'component',
     'doseId',
     'abo',
@@ -877,6 +681,7 @@ function fillFields(d) {
     'expiryDate',
     'anticoagulant',
     'additiveSolution'
+
   ];
 
 
@@ -885,7 +690,7 @@ function fillFields(d) {
     document
       .getElementById(id)
       .value =
-      d[id] || '';
+        d[id] || '';
 
   });
 
@@ -893,17 +698,16 @@ function fillFields(d) {
 
 
 
-// =====================================================
-// ПІДТВЕРДЖЕННЯ
-// =====================================================
+// ========================================
+// SAVE
+// ========================================
 
 function submitDose() {
 
   const doseId =
-    document
-      .getElementById('doseId')
-      .value
-      .trim();
+    valueOf(
+      'doseId'
+    );
 
 
   if (!doseId) {
@@ -916,100 +720,94 @@ function submitDose() {
   }
 
 
-  const fields = {
+  setStatus(
+    'Зберігаю дозу...',
+    ''
+  );
+
+
+  sendToBackend({
+
+    action:
+      'save',
 
     doseId:
       doseId,
 
     component:
-      document.getElementById('component').value,
+      valueOf('component'),
 
     abo:
-      document.getElementById('abo').value,
+      valueOf('abo'),
 
     rh:
-      document.getElementById('rh').value,
+      valueOf('rh'),
 
     phenotype:
-      document.getElementById('phenotype').value,
+      valueOf('phenotype'),
 
     kell:
-      document.getElementById('kell').value,
+      valueOf('kell'),
 
     volume:
-      document.getElementById('volume').value,
+      valueOf('volume'),
 
     collectionDate:
-      document.getElementById('collectionDate').value,
+      valueOf('collectionDate'),
 
     expiryDate:
-      document.getElementById('expiryDate').value,
+      valueOf('expiryDate'),
 
     anticoagulant:
-      document.getElementById('anticoagulant').value,
+      valueOf('anticoagulant'),
 
     additiveSolution:
-      document.getElementById('additiveSolution').value,
+      valueOf('additiveSolution'),
 
     rawText:
       rawOCR
 
-  };
+  });
+
+}
 
 
-  const form =
-    document.createElement(
-      'form'
+
+// ========================================
+// HELPERS
+// ========================================
+
+function valueOf(id) {
+
+  return document
+    .getElementById(id)
+    .value
+    .trim();
+}
+
+
+function setStatus(
+  text,
+  className
+) {
+
+  const el =
+    document.getElementById(
+      'status'
     );
 
 
-  form.method =
-    'POST';
-
-  form.action =
-    APPS_SCRIPT_URL;
-
-  form.target =
-    '_blank';
+  el.textContent =
+    text;
 
 
-  Object.keys(fields)
-    .forEach(key => {
+  el.className =
+    className || '';
 
-      const input =
-        document.createElement(
-          'input'
-        );
-
-      input.type =
-        'hidden';
-
-      input.name =
-        key;
-
-      input.value =
-        fields[key];
-
-      form.appendChild(
-        input
-      );
-
-    });
-
-
-  document.body
-    .appendChild(
-      form
-    );
-
-
-  form.submit();
-
-
-  form.remove();
 }
 
 </script>
 
 </body>
+
 </html>
