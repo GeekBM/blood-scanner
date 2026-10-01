@@ -631,9 +631,19 @@ function fillFields(d) {
         d[id] || '';
 
   });
-
 }
 
+document
+  .getElementById('confirmButton')
+  .addEventListener(
+    'pointerup',
+    function(event) {
+
+      event.preventDefault();
+
+      submitDose();
+    }
+  );
 
 let pollTimer = null;
 
